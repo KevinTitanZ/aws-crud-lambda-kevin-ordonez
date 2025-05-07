@@ -8,7 +8,7 @@ exports.obtenerTask = async (event) => {
     const result = await dynamoDB
       .get({
         TableName: "tareasTable",
-        Key: { id }, // ← Corregido a 'Key'
+        Key: { id },
       })
       .promise();
 

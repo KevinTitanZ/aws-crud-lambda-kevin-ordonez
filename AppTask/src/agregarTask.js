@@ -12,7 +12,8 @@ exports.agregarTask = async (event) => {
         id,
         titulo,
         descripcion,
-        fechaCreacion
+        fechaCreacion,
+        estado: false
     };
 
     try {

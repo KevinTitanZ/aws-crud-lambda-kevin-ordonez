@@ -39,6 +39,13 @@ functions:
           path: /tareas/{id}
           method: get
 
+  actualizarTask:
+    handler: src/actualizarTask.actualizarTask
+    events:
+      - httpApi:
+          path: /tareas/{id}
+          method: put
+
 
 resources:
   Resources:
