@@ -32,8 +32,8 @@ functions:
           path: /tareas
           method: get
 
-  obtenerTarea:
-    handler: src/obtenerTarea.obtenerTarea
+  obtenerTask:
+    handler: src/obtenerTarea.obtenerTask
     events:
       - httpApi:
           path: /tareas/{id}
@@ -45,6 +45,12 @@ functions:
       - httpApi:
           path: /tareas/{id}
           method: put
+  eliminarTask:
+    handler: src/eliminarTask.eliminarTask
+    events:
+      - httpApi:
+          path: /tarea/{id}
+          method: delete
 
 
 resources:
