@@ -3,6 +3,8 @@ service: AppTask
 provider:
   name: aws
   runtime: nodejs20.x
+  httpApi:
+    cors: true
   iamRoleStatements:
     - Effect: Allow
       Action:
@@ -51,7 +53,6 @@ functions:
       - httpApi:
           path: /tarea/{id}
           method: delete
-
 
 resources:
   Resources:

@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Gestión de Tareas</title>
+   <link rel="stylesheet" href="css/style.css">
+  </head>
+  <body>
+    <h1>Gestor de Tareas Ordoñez Kevin</h1>
+
+    <form id="taskForm">
+      <input type="text" id="titulo" placeholder="Título" required />
+      <input type="text" id="descripcion" placeholder="Descripción" required />
+      <select id="estado">
+        <option value="false">Pendiente</option>
+        <option value="true">Completada</option>
+      </select>
+      <button type="submit">Crear Tarea</button>
+    </form>
+
+    <ul id="tasksList"></ul>
+
+    <script>
+      const apiBaseUrl =
+        "https://uftf3ytoc7.execute-api.us-east-1.amazonaws.com";
+
+      async function obtenerTareas() {
+        try {
+          const response = await fetch(`${apiBaseUrl}/tareas`);
+          const data = await response.json();
+          const tasksList = document.getElementById("tasksList");
+          tasksList.innerHTML = "";
+
+          data.data.forEach((task) => {
+            const taskElement = document.createElement("li");
+            taskElement.innerHTML = `
+            <div class="task-info">
+              <strong>${task.titulo}</strong> - ${task.descripcion}<br>
+              Estado: ${task.estado ? "Completada" : "Pendiente"}
+            </div>
+            <div>
+              <button onclick="editarTask('${task.id}', '${task.titulo}', '${
+              task.descripcion
+            }', ${task.estado})">Editar</button>
+              <button onclick="eliminarTask('${task.id}')">Eliminar</button>
+            </div>
+          `;
+            tasksList.appendChild(taskElement);
+          });
+        } catch (error) {
+          alert("Error al obtener tareas: " + error.message);
+        }
+      }
+
+      document
+        .getElementById("taskForm")
+        .addEventListener("submit", async (e) => {
+          e.preventDefault();
+          const titulo = document.getElementById("titulo").value;
+          const descripcion = document.getElementById("descripcion").value;
+          const estado = document.getElementById("estado").value === "true";
+
+          try {
+            const response = await fetch(`${apiBaseUrl}/tarea`, {
+              method: "PUT",
+              headers: {
+                "Content-Type": "application/json",
+              },
+              body: JSON.stringify({ titulo, descripcion, estado }),
+            });
+
+            const data = await response.json();
+            if (data.message.includes("éxito")) {
+              obtenerTareas();
+              e.target.reset();
+            } else {
+              alert("Error al crear tarea");
+            }
+          } catch (error) {
+            alert("Error al crear tarea: " + error.message);
+          }
+        });
+
+      async function eliminarTask(id) {
+        if (!confirm("¿Estás seguro de eliminar esta tarea?")) return;
+
+        try {
+          const response = await fetch(`${apiBaseUrl}/tarea/${id}`, {
+            method: "DELETE",
+          });
+          const data = await response.json();
+          if (data.message.includes("eliminada")) {
+            obtenerTareas();
+          } else {
+            alert("Error al eliminar tarea");
+          }
+        } catch (error) {
+          alert("Error al eliminar tarea: " + error.message);
+        }
+      }
+
+      async function editarTask(id, titulo, descripcion, estado) {
+        const nuevoTitulo = prompt("Nuevo título:", titulo);
+        const nuevaDescripcion = prompt("Nueva descripción:", descripcion);
+        const nuevoEstado = confirm("¿Marcar como completada?");
+
+        if (!nuevoTitulo || !nuevaDescripcion) {
+          alert("Todos los campos son obligatorios");
+          return;
+        }
+        try {
+          const response = await fetch(`${apiBaseUrl}/tareas/${id}`, {
+            method: "PUT",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+              titulo: nuevoTitulo,
+              descripcion: nuevaDescripcion,
+              estado: nuevoEstado,
+            }),
+          });
+
+          const data = await response.json();
+          if (data.message.includes("actualizada")) {
+            obtenerTareas();
+          } else {
+            alert("Error al actualizar tarea");
+          }
+        } catch (error) {
+          alert("Error al actualizar tarea: " + error.message);
+        }
+      }
+
+      document.addEventListener("DOMContentLoaded", obtenerTareas);
+    </script>
+  </body>
+</html>
