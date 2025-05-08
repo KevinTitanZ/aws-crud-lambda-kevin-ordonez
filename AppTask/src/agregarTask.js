@@ -18,7 +18,7 @@ exports.agregarTask = async (event) => {
 
     try {
         await dynamoDB.put({
-            TableName: 'tareasTable', // ⚠️ Ajusta el nombre real de tu tabla
+            TableName: 'tareasTable', 
             Item: item
         }).promise();
 
